@@ -7,7 +7,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnH2N2X1XVjH7l+htjJ8e5t4Xh+WwzQocIJcXxYKmqKJ4h7ZQ0lwnzC4BnSXZAh1I8T/r3Hg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Global Styles */
         * {
@@ -183,7 +183,7 @@
             .then(data => {
                 if (data.error) {
                     alert(data.error);
-                } else {
+                } else if (data.specs && data.specs.length > 0) {
                     data.specs.forEach((spec, index) => {
                         const card = document.createElement('div');
                         card.className = 'result-card';
@@ -196,14 +196,24 @@
                         title.innerText = `Car ${index + 1} Specifications:`;
                         card.appendChild(title);
 
-                        for (let key in spec) {
-                            const p = document.createElement('p');
-                            p.innerText = `${key}: ${spec[key]}`;
-                            card.appendChild(p);
+                        if (spec.error) {
+                            const errorText = document.createElement('p');
+                            errorText.innerText = spec.error;
+                            card.appendChild(errorText);
+                        } else {
+                            for (let key in spec) {
+                                const p = document.createElement('p');
+                                p.innerText = `${key}: ${spec[key]}`;
+                                card.appendChild(p);
+                            }
                         }
 
                         resultsContainer.appendChild(card);
                     });
+                } else {
+                    const noResultsText = document.createElement('p');
+                    noResultsText.innerText = 'No specifications found.';
+                    resultsContainer.appendChild(noResultsText);
                 }
             })
             .catch(error => console.error('Error:', error));
